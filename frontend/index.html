@@ -8,6 +8,21 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // GitHub Pages SPA fallback: 404.html redirects to /?p=<encoded-route>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var p = params.get('p');
+        if (!p) return;
+
+        try {
+          var decoded = decodeURIComponent(p);
+          window.history.replaceState(null, '', decoded);
+        } catch (_) {
+          // ignore
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

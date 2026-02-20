@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Not Found</title>
+    <script>
+      // Simple SPA fallback for GitHub Pages.
+      // Redirect unknown paths back to the app entry while preserving the route.
+      (function () {
+        var pathname = window.location.pathname;
+        var search = window.location.search;
+        var hash = window.location.hash;
+
+        // If hosted at /<repo>/, keep that prefix.
+        var segments = pathname.split('/').filter(Boolean);
+        var repoBase = segments.length > 0 ? '/' + segments[0] + '/' : '/';
+
+        var route = pathname.replace(repoBase, '/');
+        var target = repoBase + '?p=' + encodeURIComponent(route + search + hash);
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
