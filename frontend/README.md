@@ -1,29 +1,114 @@
-# React + Vite
+# MovieBookmark
 
-## Setup
+A React movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies, search by title, and save your favourites — all persisted in your browser's local storage.
 
-This project uses the TMDB API.
+**Live site:** https://zamanasad007.github.io/MovieEngine/
 
-1. Create `frontend/.env` based on `frontend/.env.example`
-2. Set `VITE_TMDB_API_KEY` to your TMDB API key
-3. Install + run:
+---
 
-```bash
-npm install
-npm run dev
+## Features
+
+- **Popular movies** — loads the current trending movies from TMDB on launch
+- **Search** — search movies by title in real time
+- **Favourites** — add/remove movies from a personal favourites list with a ❤ button
+- **Persistent favourites** — favourites are stored in `localStorage` and survive page refreshes
+- **Fixed navbar** — always-visible navigation between Home and Favourites
+- **Responsive grid** — movie cards adapt from a single column on mobile up to a multi-column grid on wider screens
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| UI | React 19 |
+| Routing | React Router v7 |
+| Build | Vite 5 |
+| State | React Context API |
+| Persistence | Browser `localStorage` |
+| Data | TMDB REST API |
+| CI/CD | GitHub Actions → GitHub Pages |
+
+---
+
+## Project structure
+
+```
+frontend/
+├── public/
+│   └── 404.html          # SPA fallback for GitHub Pages routing
+├── src/
+│   ├── components/
+│   │   ├── NavBar.jsx     # Fixed top navigation bar
+│   │   └── movieCard.jsx  # Movie card with poster, title, year and ❤ button
+│   ├── contexts/
+│   │   └── MovieContext.jsx  # Global favourites state (Context + localStorage)
+│   ├── css/               # Per-component CSS files
+│   ├── pages/
+│   │   ├── Home.jsx       # Popular movies + search
+│   │   └── Favourite.jsx  # Saved favourites list
+│   ├── services/
+│   │   └── Api.js         # TMDB API helpers (getPopularMovies, searchMovies)
+│   ├── App.jsx            # Route definitions
+│   └── main.jsx           # React entry point
+├── .env.example           # Environment variable template
+└── vite.config.js
 ```
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
 
-## React Compiler
+- Node.js 20+
+- A free [TMDB API key](https://www.themoviedb.org/settings/api)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Steps
 
-## Expanding the ESLint configuration
+```bash
+# 1. Clone the repo
+git clone https://github.com/ZamanAsad007/MovieEngine.git
+cd MovieEngine
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# 2. Create your local env file
+cp frontend/.env.example frontend/.env
+# Edit frontend/.env and set your key:
+# VITE_TMDB_API_KEY=your_key_here
+
+# 3. Install dependencies
+npm install --prefix frontend
+
+# 4. Start the dev server
+npm --prefix frontend run dev
+```
+
+Open http://localhost:5173/ in your browser.
+
+---
+
+## Available scripts
+
+Run these from the `frontend/` directory (or use the `--prefix frontend` flag from the repo root):
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server with HMR |
+| `npm run build` | Production build into `frontend/dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint` | Run ESLint |
+
+---
+
+## Deployment (GitHub Pages)
+
+The repository includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml` that automatically builds and deploys the site on every push to `main`.
+
+### One-time repository setup
+
+1. Go to **Settings → Pages** and set Source to **GitHub Actions**
+2. Go to **Settings → Secrets and variables → Actions** and add:
+   - Name: `VITE_TMDB_API_KEY`
+   - Value: your TMDB API key
+
+After that, any push to `main` triggers a deploy to https://zamanasad007.github.io/MovieEngine/.
