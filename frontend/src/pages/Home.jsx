@@ -1,18 +1,20 @@
 import MovieCard from "../components/movieCard.jsx";
 import { useState, useEffect } from "react";
-import { searchMovies, getPopularMovies } from "../services/Api";
+import { searchMovies, getPopularMovies, searchTvShows, getPopularTvShows } from "../services/Api";
 import '../css/Home.css'
 function Home() {
+    const [mediaType, setMediaType] = useState("movie");
     const [searchQuery, setSearchQuery] = useState(""); 
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState(null);
     const[loading, setLoading] = useState(true);
 
     useEffect(()=>{
-        const loadPopularMovies = async()=>{
+        const loadPopular = async()=>{
             try{
-                const popularMovies = await getPopularMovies();
-                setMovies(popularMovies);
+                setLoading(true);
+                const popular = mediaType === "tv" ? await getPopularTvShows() : await getPopularMovies();
+                setMovies(popular);
             }catch(err){
                 console.log(err);
                 setError(err?.message || "Failed to load popular movies. Please try again later.");
@@ -21,8 +23,8 @@ function Home() {
                 setLoading(false);
             }
         }
-        loadPopularMovies();
-    },[])
+        loadPopular();
+    },[mediaType])
 
     async function searchFormHandler(e) {
         e.preventDefault();
@@ -34,7 +36,7 @@ function Home() {
         try {
             setLoading(true);
             setError(null);
-            const results = await searchMovies(searchQuery);
+            const results = mediaType === "tv" ? await searchTvShows(searchQuery) : await searchMovies(searchQuery);
             setMovies(results);
         } catch (err) {
             console.log(err);
@@ -44,6 +46,22 @@ function Home() {
         }
     }
     return <div className="home">
+        <div className="toggle-bar">
+            <button
+                type="button"
+                className={`toggle-button ${mediaType === "movie" ? "active" : ""}`}
+                onClick={() => { setMediaType("movie"); setSearchQuery(""); }}
+            >
+                Movies
+            </button>
+            <button
+                type="button"
+                className={`toggle-button ${mediaType === "tv" ? "active" : ""}`}
+                onClick={() => { setMediaType("tv"); setSearchQuery(""); }}
+            >
+                TV Shows
+            </button>
+        </div>
         <form onSubmit={searchFormHandler} className="search-form">
             <input type="text" 
             placeholder="Search for movies..." 
@@ -56,10 +74,11 @@ function Home() {
         {error ? <div className="error-message">{error}</div> : null}
         {loading ? <div className="loading">Loading...</div> : null}
         <div className="movie-grid">
-            {movies.map(movie => movie.title.toLowerCase().startsWith(searchQuery.toLowerCase()) &&
-            (
-                <MovieCard key={movie.id} movie={movie} />
-            ))}
+            {movies.map(item => {
+                const title = (item?.title || item?.name || "").toLowerCase()
+                const q = searchQuery.toLowerCase()
+                return title.startsWith(q) ? <MovieCard key={item.id} movie={item} /> : null
+            })}
         </div>
     </div>
 }

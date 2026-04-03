@@ -3,17 +3,17 @@ import { useMovieContext } from "../contexts/MovieContext.jsx";
 import MovieCard from "../components/movieCard.jsx";
 import { useNavigate } from "react-router-dom";
 
-function Favorites() {
+function Watched() {
   const navigate = useNavigate();
-  const { favorites } = useMovieContext();
+  const { watchedMovies } = useMovieContext();
 
-  if (Array.isArray(favorites) && favorites.length > 0) {
+  if (Array.isArray(watchedMovies) && watchedMovies.length > 0) {
     return (
       <div className="favorites">
         <button onClick={() => navigate(-1)}>Back</button>
-        <h2>Your Favorites</h2>
+        <h2>Already Watched</h2>
         <div className="movie-grid">
-          {favorites.map((movie) => (
+          {watchedMovies.map((movie) => (
             <MovieCard movie={movie} key={movie.id} />
           ))}
         </div>
@@ -24,10 +24,10 @@ function Favorites() {
   return (
     <div className="favorites-empty">
       <button onClick={() => navigate(-1)}>Back</button>
-      <h2>No Favorite Movies Yet</h2>
-      <p>Start adding movies to your favorites and they will appear here!</p>
+      <h2>No Watched Movies Yet</h2>
+      <p>Mark movies as watched from your favourites.</p>
     </div>
   );
 }
 
-export default Favorites;
+export default Watched;

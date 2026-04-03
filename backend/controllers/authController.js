@@ -33,3 +33,13 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.me = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('_id name email avatar');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, avatar: user.avatar } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};

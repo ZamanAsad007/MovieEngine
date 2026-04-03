@@ -1,33 +1,59 @@
 import '../css/MovieCard.css'
 import { useMovieContext } from "../contexts/MovieContext.jsx";
+import { useAuth } from "../contexts/AuthContext.jsx";
+import { useUi } from "../contexts/UiContext.jsx";
 
 function MovieCard({ movie }) {
-    const { isFavorite, addToFavorites, removeFromFavorites } = useMovieContext()
+    const { isFavorite, addToFavorites, removeFromFavorites, isWatched, setWatched } = useMovieContext()
+    const { isAuthenticated } = useAuth()
+    const { openAuthModal } = useUi()
     const movieId = movie?.id
     const favorite = movieId ? isFavorite(movieId) : false
+    const watched = movieId ? isWatched(movieId) : false
+    const title = movie?.title || movie?.name
+    const year = (movie?.release_date || movie?.first_air_date)?.split?.("-")?.[0]
     const posterUrl = movie?.posterUrl ?? (movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null)
 
     function onFavoriteClick(e) {
         e?.preventDefault?.()
         if (!movieId) return
-        if (favorite) removeFromFavorites(movieId)
-        else addToFavorites(movie)
+        if (favorite) {
+            removeFromFavorites(movieId)
+            return
+        }
+
+        if (!isAuthenticated) {
+            openAuthModal()
+            return
+        }
+
+        addToFavorites(movie)
+    }
+
+    function onWatchedClick(e) {
+        e?.preventDefault?.()
+        if (!movieId) return
+        if (!favorite) return
+        setWatched(movieId, !watched)
     }
 
     if (!movie) return null
     return (
         <div className="movie-card">
-            {posterUrl ? <img src={posterUrl} alt={movie.title} /> : null}
-            <h3>{movie.title}</h3>
+            {posterUrl ? <img src={posterUrl} alt={title} /> : null}
+            <h3>{title}</h3>
             {/* <p>{movie.releaseDate}</p> */}
             <div className="movie-overlay">
                 <button className={`favourite-btn ${favorite ? "active" : ""}`} onClick={onFavoriteClick}>
                     ❤
                 </button>
+                <button className={`watched-btn ${watched ? "active" : ""}`} onClick={onWatchedClick} title="Mark as watched">
+                    ✓
+                </button>
             </div>
             <div className="movie-info">
-                <h3>{movie.title}</h3>
-                <p>{movie.release_date?.split("-")[0]}</p>
+                <h3>{title}</h3>
+                <p>{year}</p>
             </div>
         </div>
     );

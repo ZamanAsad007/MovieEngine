@@ -28,3 +28,29 @@ export const searchMovies = async (query) => {
     const data = await response.json();
     return data.results;
 }
+
+export const getPopularTvShows = async () => {
+    if (!API_KEY) {
+        throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
+    }
+
+    const response = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`);
+    if (!response.ok) {
+        throw new Error(`TMDB request failed: ${response.status}`)
+    }
+    const data = await response.json();
+    return data.results;
+};
+
+export const searchTvShows = async (query) => {
+    if (!API_KEY) {
+        throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
+    }
+
+    const response = await fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+        throw new Error(`TMDB request failed: ${response.status}`)
+    }
+    const data = await response.json();
+    return data.results;
+}
