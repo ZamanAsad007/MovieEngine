@@ -1,20 +1,27 @@
 import MovieCard from "../components/movieCard.jsx";
 import { useState, useEffect } from "react";
-import { searchMovies, getPopularMovies, searchTvShows, getPopularTvShows } from "../services/Api";
+import { useSearchParams } from "react-router-dom";
+import { searchMovies, getPopularMovies, getTopRatedMovies, searchTvShows, getPopularTvShows, getTopRatedTvShows } from "../services/Api";
 import '../css/Home.css'
 function Home() {
+    const [searchParams] = useSearchParams();
     const [mediaType, setMediaType] = useState("movie");
     const [searchQuery, setSearchQuery] = useState(""); 
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState(null);
     const[loading, setLoading] = useState(true);
 
+    const listType = searchParams.get('list') || 'popular';
+
     useEffect(()=>{
         const loadPopular = async()=>{
             try{
                 setLoading(true);
-                const popular = mediaType === "tv" ? await getPopularTvShows() : await getPopularMovies();
-                setMovies(popular);
+                const items = (() => {
+                    if (mediaType === 'tv') return listType === 'top_rated' ? getTopRatedTvShows() : getPopularTvShows();
+                    return listType === 'top_rated' ? getTopRatedMovies() : getPopularMovies();
+                })();
+                setMovies(await items);
             }catch(err){
                 console.log(err);
                 setError(err?.message || "Failed to load popular movies. Please try again later.");
@@ -24,7 +31,7 @@ function Home() {
             }
         }
         loadPopular();
-    },[mediaType])
+    },[mediaType, listType])
 
     async function searchFormHandler(e) {
         e.preventDefault();
@@ -64,7 +71,7 @@ function Home() {
         </div>
         <form onSubmit={searchFormHandler} className="search-form">
             <input type="text" 
-            placeholder="Search for movies..." 
+            placeholder={mediaType === 'tv' ? "Search for TV shows..." : "Search for movies..."}
             className="search-input" 
             value={searchQuery}
             onChange={(e)=>setSearchQuery(e.target.value)}

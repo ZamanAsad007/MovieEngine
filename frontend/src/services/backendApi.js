@@ -1,4 +1,8 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const DEFAULT_BACKEND_URL = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://movieengine.onrender.com";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
 
 async function request(path, { method = "GET", token, body } = {}) {
   const res = await fetch(`${BACKEND_URL}${path}`, {
