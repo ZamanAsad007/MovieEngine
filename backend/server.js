@@ -20,6 +20,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.get('/', (req, res) => {
+  res.send('MovieEngine API is running');
+});
 
 const authRoutes = require('./routes/authRoutes')
 const bookmarkRoutes = require('./routes/bookmarkRoutes')
