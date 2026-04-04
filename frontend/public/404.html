@@ -12,11 +12,16 @@
         var search = window.location.search;
         var hash = window.location.hash;
 
-        // If hosted at /<repo>/, keep that prefix.
-        var segments = pathname.split('/').filter(Boolean);
-        var repoBase = segments.length > 0 ? '/' + segments[0] + '/' : '/';
+        // On GitHub Pages, the app is often hosted at /<repo>/.
+        // On Vercel (and most hosts), the app is hosted at '/'.
+        var isGitHubPages = window.location.hostname.endsWith('github.io');
+        var repoBase = '/';
+        if (isGitHubPages) {
+          var segments = pathname.split('/').filter(Boolean);
+          repoBase = segments.length > 0 ? '/' + segments[0] + '/' : '/';
+        }
 
-        var route = pathname.replace(repoBase, '/');
+        var route = isGitHubPages ? pathname.replace(repoBase, '/') : pathname;
         var target = repoBase + '?p=' + encodeURIComponent(route + search + hash);
         window.location.replace(target);
       })();
