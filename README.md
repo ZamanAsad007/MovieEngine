@@ -1,19 +1,20 @@
-# MovieBookmark
+# MovieEngine
 
-A React movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies, search by title, and save your favourites — all persisted in your browser's local storage.
+A full‑stack movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies, search by title, and manage your favourites/watched list with an authenticated account.
 
-**Live site:** https://zamanasad007.github.io/MovieEngine/
+**Live site:** https://movie-engine-five.vercel.app
+
+**Backend API:** https://movieengine.onrender.com
 
 ---
 
 ## Features
 
-- **Popular movies** — loads the current trending movies from TMDB on launch
-- **Search** — search movies by title in real time
-- **Favourites** — add/remove movies from a personal favourites list with a ❤ button
-- **Persistent favourites** — favourites are stored in `localStorage` and survive page refreshes
-- **Fixed navbar** — always-visible navigation between Home and Favourites
-- **Responsive grid** — movie cards adapt from a single column on mobile up to a multi-column grid on wider screens
+- **Popular movies** — loads trending movies from TMDB
+- **Search** — search movies by title
+- **Auth** — email/password login + Google OAuth
+- **Favourites** — add/remove favourites (stored in MongoDB per user)
+- **Watched** — mark items watched and view watched list
 
 ---
 
@@ -25,18 +26,29 @@ A React movie browsing app powered by the [TMDB API](https://www.themoviedb.org/
 | Routing | React Router v7 |
 | Build | Vite 5 |
 | State | React Context API |
-| Persistence | Browser `localStorage` |
+| Backend | Node.js + Express |
+| Auth | Passport (Local + Google OAuth) + JWT |
+| Database | MongoDB Atlas + Mongoose |
 | Data | TMDB REST API |
-| CI/CD | GitHub Actions → GitHub Pages |
+| Hosting | Vercel (frontend) + Render (backend) |
 
 ---
 
 ## Project structure
 
 ```
+backend/
+├── config/
+│   └── passport.js
+├── controllers/
+├── middleware/
+├── models/
+├── routes/
+└── server.js
+
 frontend/
 ├── public/
-│   └── 404.html          # SPA fallback for GitHub Pages routing
+│   └── 404.html          # SPA fallback (client-side routing)
 ├── src/
 │   ├── components/
 │   │   ├── NavBar.jsx     # Fixed top navigation bar
@@ -63,27 +75,33 @@ frontend/
 
 - Node.js 20+
 - A free [TMDB API key](https://www.themoviedb.org/settings/api)
+- A MongoDB connection string (Atlas or local)
 
 ### Steps
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/ZamanAsad007/MovieEngine.git
-cd MovieEngine
+# 1) Backend
+cd backend
+npm install
 
-# 2. Create your local env file
-cp frontend/.env.example frontend/.env
-# Edit frontend/.env and set your key:
-# VITE_TMDB_API_KEY=your_key_here
+# Create backend/.env (copy keys from backend/.env.example if you have one)
+# Required: MONGO_URI, JWT_SECRET, SESSION_SECRET
+# For Google OAuth (optional locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
-# 3. Install dependencies
-npm install --prefix frontend
+npm start
 
-# 4. Start the dev server
-npm --prefix frontend run dev
+# 2) Frontend (new terminal)
+cd ../frontend
+npm install
+
+# Create frontend/.env
+# Required: VITE_TMDB_API_KEY
+# Optional: VITE_BACKEND_URL=http://localhost:5000
+
+npm run dev
 ```
 
-Open http://localhost:5173/ in your browser.
+Open the Vite URL shown in the terminal (usually http://localhost:5173).
 
 ---
 
@@ -100,15 +118,9 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 ---
 
-## Deployment (GitHub Pages)
+## Deployment notes
 
-The repository includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml` that automatically builds and deploys the site on every push to `main`.
-
-### One-time repository setup
-
-1. Go to **Settings → Pages** and set Source to **GitHub Actions**
-2. Go to **Settings → Secrets and variables → Actions** and add:
-   - Name: `VITE_TMDB_API_KEY`
-   - Value: your TMDB API key
-
-After that, any push to `main` triggers a deploy to https://zamanasad007.github.io/MovieEngine/.
+- **Frontend (Vercel):** set `VITE_TMDB_API_KEY` and (optionally) `VITE_BACKEND_URL=https://movieengine.onrender.com`.
+- **Backend (Render):** set `MONGO_URI`, `JWT_SECRET`, `SESSION_SECRET`, `FRONTEND_ORIGIN=https://movie-engine-five.vercel.app`.
+- **Google OAuth:** in Google Cloud Console add Authorized redirect URI:
+   - `https://movieengine.onrender.com/api/auth/google/callback`
