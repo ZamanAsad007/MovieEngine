@@ -27,7 +27,20 @@ exports.addBookmark = async (req, res) => {
     }
 
     const exists = await Bookmark.findOne({ userId: req.userId, movieId });
-    if (exists) return res.status(400).json({ message: 'Already bookmarked' });
+    if (exists) {
+      // If the user previously added it to Watched without favouriting,
+      // allow turning it into a favourite instead of erroring.
+      if (exists.favorite === false) {
+        exists.favorite = true;
+        if (title) exists.title = exists.title || title;
+        if (poster !== undefined) exists.poster = poster;
+        if (rating !== undefined) exists.rating = rating;
+        const updated = await exists.save();
+        return res.json(updated);
+      }
+
+      return res.status(400).json({ message: 'Already bookmarked' });
+    }
 
     const bookmark = await Bookmark.create({
       userId: req.userId,
@@ -35,6 +48,7 @@ exports.addBookmark = async (req, res) => {
       title,
       poster,
       rating,
+      favorite: true,
     });
     res.status(201).json(bookmark);
   } catch (err) {
@@ -49,6 +63,14 @@ exports.setWatched = async (req, res) => {
 
     const { title, poster, rating } = req.body;
 
+    // If we're creating a watched-only bookmark, we still need required fields.
+    if (isWatched && !title) {
+      const existing = await Bookmark.findOne({ userId: req.userId, movieId: req.params.movieId });
+      if (!existing) {
+        return res.status(400).json({ message: 'title is required to mark as watched' });
+      }
+    }
+
     const filter = { userId: req.userId, movieId: req.params.movieId };
     const update = {
       $set: { watched: isWatched, watchedAt: isWatched ? new Date() : null },
@@ -60,6 +82,7 @@ exports.setWatched = async (req, res) => {
               ...(title ? { title } : null),
               ...(poster ? { poster } : null),
               ...(rating !== undefined ? { rating } : null),
+              favorite: false,
             },
           }
         : null),

@@ -6,6 +6,7 @@ const bookmarkSchema = new mongoose.Schema({
   title: { type: String, required: true },
   poster: { type: String },
   rating: { type: Number },
+  favorite: { type: Boolean, default: false },
   watched: { type: Boolean, default: false },
   watchedAt: { type: Date },
 }, { timestamps: true });
