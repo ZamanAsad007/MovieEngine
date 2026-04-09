@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="movieEngine">
+  <rect width="64" height="64" rx="12" fill="#000"/>
+  <!-- Projector body -->
+  <rect x="16" y="26" width="28" height="18" rx="4" fill="#e50914"/>
+  <!-- Reels -->
+  <circle cx="22" cy="24" r="7" fill="#e50914"/>
+  <circle cx="34" cy="24" r="7" fill="#e50914"/>
+  <circle cx="22" cy="24" r="3" fill="#000" opacity="0.7"/>
+  <circle cx="34" cy="24" r="3" fill="#000" opacity="0.7"/>
+  <!-- Lens -->
+  <rect x="44" y="31" width="6" height="8" rx="2" fill="#e50914"/>
+  <!-- Stand -->
+  <rect x="26" y="44" width="8" height="4" rx="2" fill="#e50914"/>
+</svg>

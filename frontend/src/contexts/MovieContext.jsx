@@ -51,7 +51,7 @@ export const MovieProvider = ({children}) => {
         if (isAuthenticated) {
             const payload = {
                 movieId: String(movie.id),
-                title: movie.title,
+                title: movie.title || movie.name,
                 poster: movie?.posterUrl ?? (movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null),
                 rating: movie?.rating,
             }
@@ -83,13 +83,56 @@ export const MovieProvider = ({children}) => {
         return favorites.some(movie => movie.id === movieId && movie.watched)
     }
 
-    const setWatched = (movieId, watched) => {
+    const setWatched = (movieId, watched, movieMeta) => {
+        const nextWatched = Boolean(watched)
+
+        const meta = movieMeta
+            ? {
+                title: movieMeta.title || movieMeta.name,
+                poster:
+                    movieMeta?.posterUrl ??
+                    (movieMeta?.poster_path ? `https://image.tmdb.org/t/p/w500${movieMeta.poster_path}` : null),
+                rating: movieMeta?.rating,
+              }
+            : null
+
         if (isAuthenticated) {
-            bookmarksApi.setWatched(token, String(movieId), Boolean(watched)).catch(() => {})
+            bookmarksApi
+                .setWatched(token, String(movieId), nextWatched, meta)
+                .then((b) => {
+                    setFavorites(prev => {
+                        const exists = prev.some(m => String(m.id) === String(movieId))
+                        if (exists) {
+                            return prev.map(m => (String(m.id) === String(movieId) ? { ...m, watched: Boolean(b?.watched) } : m))
+                        }
+                        // Created by backend (watched without prior favourite)
+                        return [
+                            ...prev,
+                            {
+                                id: Number(b.movieId) || b.movieId,
+                                title: b.title,
+                                posterUrl: b.poster,
+                                rating: b.rating,
+                                watched: Boolean(b.watched),
+                            },
+                        ]
+                    })
+                })
+                .catch(() => {})
         }
-        setFavorites(prev => prev.map(movie => (
-            movie.id === movieId ? { ...movie, watched: Boolean(watched) } : movie
-        )))
+
+        setFavorites(prev => {
+            const exists = prev.some(m => String(m.id) === String(movieId))
+            if (exists) {
+                return prev.map(movie => (
+                    String(movie.id) === String(movieId) ? { ...movie, watched: nextWatched } : movie
+                ))
+            }
+            if (nextWatched && movieMeta) {
+                return [...prev, { ...movieMeta, watched: true }]
+            }
+            return prev
+        })
     }
     
     const isFavorite = (movieId) => {
@@ -97,7 +140,7 @@ export const MovieProvider = ({children}) => {
     }
 
     const value = {
-        favorites,
+        favorites: favorites.filter(m => !m.watched),
         watchedMovies: favorites.filter(m => m.watched),
         addToFavorites,
         removeFromFavorites,

@@ -33,8 +33,11 @@ function MovieCard({ movie }) {
     function onWatchedClick(e) {
         e?.preventDefault?.()
         if (!movieId) return
-        if (!favorite) return
-        setWatched(movieId, !watched)
+        if (!isAuthenticated) {
+            openAuthModal()
+            return
+        }
+        setWatched(movieId, !watched, movie)
     }
 
     if (!movie) return null
@@ -44,9 +47,11 @@ function MovieCard({ movie }) {
             <h3>{title}</h3>
             {/* <p>{movie.releaseDate}</p> */}
             <div className="movie-overlay">
-                <button className={`favourite-btn ${favorite ? "active" : ""}`} onClick={onFavoriteClick}>
-                    ❤
-                </button>
+                {!watched ? (
+                    <button className={`favourite-btn ${favorite ? "active" : ""}`} onClick={onFavoriteClick}>
+                        ❤
+                    </button>
+                ) : null}
                 <button className={`watched-btn ${watched ? "active" : ""}`} onClick={onWatchedClick} title="Mark as watched">
                     ✓
                 </button>

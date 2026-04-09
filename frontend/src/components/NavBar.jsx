@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext.jsx'
+import { GiFilmProjector } from "react-icons/gi";
 function NavBar(){
     const { isAuthenticated, user, logout } = useAuth()
     const [menuOpen, setMenuOpen] = useState(false)
@@ -20,7 +21,10 @@ function NavBar(){
     const closeMenu = () => setMenuOpen(false)
 
     return <nav className="navbar">
-        <Link to="/" className="navbar-title">MovieBookmark</Link>
+        <Link to="/" className="navbar-title">
+            <GiFilmProjector style={{ color: '#e50914', fontSize: '2rem' }} />
+            <span>movieEngine</span>
+        </Link>
         <button
             type="button"
             className="navbar-menuButton"

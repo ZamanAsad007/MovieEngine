@@ -45,6 +45,10 @@ export const bookmarksApi = {
   listWatched: (token) => request("/api/bookmarks/watched", { token }),
   add: (token, bookmark) => request("/api/bookmarks", { method: "POST", token, body: bookmark }),
   remove: (token, movieId) => request(`/api/bookmarks/${movieId}`, { method: "DELETE", token }),
-  setWatched: (token, movieId, watched) =>
-    request(`/api/bookmarks/${movieId}/watched`, { method: "PATCH", token, body: { watched } }),
+  setWatched: (token, movieId, watched, meta) =>
+    request(`/api/bookmarks/${movieId}/watched`, {
+      method: "PATCH",
+      token,
+      body: { watched, ...(meta || null) },
+    }),
 };
