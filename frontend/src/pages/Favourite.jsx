@@ -7,16 +7,36 @@ function Favorites() {
   const navigate = useNavigate();
   const { favorites } = useMovieContext();
 
+  const favMovies = (Array.isArray(favorites) ? favorites : []).filter(m => (m.mediaType || 'movie') === 'movie');
+  const favTv = (Array.isArray(favorites) ? favorites : []).filter(m => (m.mediaType || 'movie') === 'tv');
+
   if (Array.isArray(favorites) && favorites.length > 0) {
     return (
       <div className="favorites">
         <button onClick={() => navigate(-1)}>Back</button>
         <h2>Your Favorites</h2>
-        <div className="movie-grid">
-          {favorites.map((movie) => (
-            <MovieCard movie={movie} key={movie.id} />
-          ))}
-        </div>
+
+        {favMovies.length ? (
+          <>
+            <h3 className="favorites-sectionTitle">Movies</h3>
+            <div className="movie-grid">
+              {favMovies.map((movie) => (
+                <MovieCard movie={movie} key={movie.id} />
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        {favTv.length ? (
+          <>
+            <h3 className="favorites-sectionTitle">TV Series</h3>
+            <div className="movie-grid">
+              {favTv.map((movie) => (
+                <MovieCard movie={movie} key={movie.id} />
+              ))}
+            </div>
+          </>
+        ) : null}
       </div>
     );
   }

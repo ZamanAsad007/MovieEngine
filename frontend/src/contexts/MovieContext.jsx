@@ -10,6 +10,11 @@ export const MovieProvider = ({children}) => {
     const [favorites, setFavorites] = useState([])
     const { token, isAuthenticated } = useAuth();
 
+    const getMediaType = (item) => {
+        if (item?.mediaType === 'movie' || item?.mediaType === 'tv') return item.mediaType
+        return item?.name && !item?.title ? 'tv' : 'movie'
+    }
+
     useEffect(() => {
         // Logged out: localStorage
         if (!isAuthenticated) {
@@ -32,6 +37,7 @@ export const MovieProvider = ({children}) => {
                     // Backward-compat: older docs may not have `favorite`.
                     // If it exists but was created as watched-only, it will be false.
                     favorite: b.favorite ?? true,
+                    mediaType: b.mediaType || 'movie',
                     watched: Boolean(b.watched),
                 }))
                 if (!cancelled) setFavorites(mapped)
@@ -57,6 +63,7 @@ export const MovieProvider = ({children}) => {
                 title: movie.title || movie.name,
                 poster: movie?.posterUrl ?? (movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null),
                 rating: movie?.rating,
+                mediaType: getMediaType(movie),
             }
             bookmarksApi.add(token, payload)
                 .then((b) => {
@@ -65,11 +72,11 @@ export const MovieProvider = ({children}) => {
                         if (exists) {
                             return prev.map(m => (
                                 String(m.id) === String(movie.id)
-                                    ? { ...m, favorite: true, watched: Boolean(b?.watched) }
+                                    ? { ...m, favorite: true, watched: Boolean(b?.watched), mediaType: b?.mediaType || m.mediaType }
                                     : m
                             ))
                         }
-                        return [...prev, { ...movie, favorite: true, watched: Boolean(b?.watched) }]
+                        return [...prev, { ...movie, favorite: true, watched: Boolean(b?.watched), mediaType: b?.mediaType || getMediaType(movie) }]
                     })
                 })
                 .catch(() => {})
@@ -85,7 +92,7 @@ export const MovieProvider = ({children}) => {
                         : m
                 ))
             }
-            return [...prev, { ...movie, favorite: true, watched: Boolean(movie.watched) }]
+            return [...prev, { ...movie, favorite: true, watched: Boolean(movie.watched), mediaType: getMediaType(movie) }]
         })
     }
 
@@ -110,6 +117,7 @@ export const MovieProvider = ({children}) => {
                     movieMeta?.posterUrl ??
                     (movieMeta?.poster_path ? `https://image.tmdb.org/t/p/w500${movieMeta.poster_path}` : null),
                 rating: movieMeta?.rating,
+                                mediaType: getMediaType(movieMeta),
               }
             : null
 
@@ -131,6 +139,7 @@ export const MovieProvider = ({children}) => {
                                 posterUrl: b.poster,
                                 rating: b.rating,
                                 favorite: Boolean(b.favorite),
+                                mediaType: b.mediaType || 'movie',
                                 watched: Boolean(b.watched),
                             },
                         ]
@@ -142,12 +151,21 @@ export const MovieProvider = ({children}) => {
         setFavorites(prev => {
             const exists = prev.some(m => String(m.id) === String(movieId))
             if (exists) {
+                const current = prev.find(m => String(m.id) === String(movieId))
+                
+                if (current && current.favorite === false && nextWatched === false) {
+                    if (isAuthenticated) {
+                        bookmarksApi.remove(token, String(movieId)).catch(() => {})
+                    }
+                    return prev.filter(m => String(m.id) !== String(movieId))
+                }
+
                 return prev.map(movie => (
                     String(movie.id) === String(movieId) ? { ...movie, watched: nextWatched } : movie
                 ))
             }
             if (nextWatched && movieMeta) {
-                return [...prev, { ...movieMeta, favorite: false, watched: true }]
+                return [...prev, { ...movieMeta, favorite: false, watched: true, mediaType: getMediaType(movieMeta) }]
             }
             return prev
         })
