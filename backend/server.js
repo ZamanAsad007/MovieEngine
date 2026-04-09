@@ -10,13 +10,34 @@ require('./config/passport');
 
 const PORT = process.env.PORT || 5000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
-const allowedOrigins = FRONTEND_ORIGIN.split(',').map(o => o.trim()).filter(Boolean);
+const allowedOrigins = new Set(
+  FRONTEND_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
+);
+
+const isLocalhostOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
+    const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+    return isHttp && isLocalhost;
+  } catch {
+    return false;
+  }
+};
+
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.add('http://localhost:5173');
+  allowedOrigins.add('http://127.0.0.1:5173');
+}
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow same-origin / server-to-server / Postman
+ 
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (allowedOrigins.has(origin)) return callback(null, true);
+    if (process.env.NODE_ENV !== 'production' && isLocalhostOrigin(origin)) {
+      return callback(null, true);
+    }
     return callback(new Error(`CORS blocked origin: ${origin}`));
   },
   credentials: true

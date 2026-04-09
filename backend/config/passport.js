@@ -24,7 +24,10 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL
+  // Prefer a relative callback so it automatically matches the current host
+  // (localhost in dev, Render domain in prod). You still must allow both
+  // absolute URLs in Google Cloud Console.
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findOne({ googleId: profile.id });

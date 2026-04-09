@@ -47,11 +47,29 @@ exports.setWatched = async (req, res) => {
     const { watched } = req.body;
     const isWatched = Boolean(watched);
 
-    const updated = await Bookmark.findOneAndUpdate(
-      { userId: req.userId, movieId: req.params.movieId },
-      { watched: isWatched, watchedAt: isWatched ? new Date() : null },
-      { returnDocument: 'after' }
-    );
+    const { title, poster, rating } = req.body;
+
+    const filter = { userId: req.userId, movieId: req.params.movieId };
+    const update = {
+      $set: { watched: isWatched, watchedAt: isWatched ? new Date() : null },
+      ...(isWatched
+        ? {
+            $setOnInsert: {
+              userId: req.userId,
+              movieId: req.params.movieId,
+              ...(title ? { title } : null),
+              ...(poster ? { poster } : null),
+              ...(rating !== undefined ? { rating } : null),
+            },
+          }
+        : null),
+    };
+
+    const updated = await Bookmark.findOneAndUpdate(filter, update, {
+      new: true,
+      upsert: isWatched,
+      setDefaultsOnInsert: true,
+    });
 
     if (!updated) return res.status(404).json({ message: 'Bookmark not found' });
     res.json(updated);
