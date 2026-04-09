@@ -36,7 +36,7 @@ function NavBar(){
         </button>
 
         <ul className="navbar-links">
-            <li><Link className="navbar-link" to="/favourites">Favourites</Link></li>
+            <li><Link className="navbar-link" to="/favourites">Bookmarks</Link></li>
             <li><Link className="navbar-link" to="/watched">Watched</Link></li>
             {!isAuthenticated ? (
                 <>
@@ -57,7 +57,7 @@ function NavBar(){
 
         {menuOpen ? (
             <div className="navbar-menu" role="menu">
-                <Link className="navbar-menuItem" to="/favourites" onClick={closeMenu}>Favourites</Link>
+                <Link className="navbar-menuItem" to="/favourites" onClick={closeMenu}>Bookmarks</Link>
                 <Link className="navbar-menuItem" to="/watched" onClick={closeMenu}>Watched</Link>
                 {!isAuthenticated ? (
                     <>

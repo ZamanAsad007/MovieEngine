@@ -14,7 +14,7 @@ function Favorites() {
     return (
       <div className="favorites">
         <button onClick={() => navigate(-1)}>Back</button>
-        <h2>Your Favorites</h2>
+        <h2>Your Bookmarks</h2>
 
         {favMovies.length ? (
           <>
@@ -44,8 +44,8 @@ function Favorites() {
   return (
     <div className="favorites-empty">
       <button onClick={() => navigate(-1)}>Back</button>
-      <h2>No Favorite Movies Yet</h2>
-      <p>Start adding movies to your favorites and they will appear here!</p>
+      <h2>No bookmark Movies or TV shows Yet</h2>
+      <p>Start adding movies and TV shows to your bookmarks and they will appear here!</p>
     </div>
   );
 }

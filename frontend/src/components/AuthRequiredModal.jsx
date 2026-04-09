@@ -11,7 +11,7 @@ function AuthRequiredModal() {
     <div className="modal-overlay" role="dialog" aria-modal="true">
       <div className="modal">
         <h3>Login required</h3>
-        <p>Please login or register to add favourites.</p>
+        <p>Please login or register to add bookmarks.</p>
 
         <div className="modal-actions">
           <Link className="modal-btn" to="/login" onClick={closeAuthModal}>

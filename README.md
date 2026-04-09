@@ -1,6 +1,8 @@
 # MovieEngine
 
-A full‑stack movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies, search by title, and manage your favourites/watched list with an authenticated account.
+A full‑stack movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies, search by title, and manage your bookmarks/watched list with an authenticated account.
+
+> Note: The app currently uses **Bookmarks** (instead of Favourites). “Favourites” will be implemented later.
 
 **Live site:** https://movie-engine-five.vercel.app
 
@@ -13,7 +15,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 - **Popular movies** — loads trending movies from TMDB
 - **Search** — search movies by title
 - **Auth** — email/password login + Google OAuth
-- **Favourites** — add/remove favourites (stored in MongoDB per user)
+- **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
 
 ---
@@ -52,13 +54,13 @@ frontend/
 ├── src/
 │   ├── components/
 │   │   ├── NavBar.jsx     # Fixed top navigation bar
-│   │   └── movieCard.jsx  # Movie card with poster, title, year and ❤ button
+│   │   └── movieCard.jsx  # Movie card with poster, title, year and bookmark button
 │   ├── contexts/
-│   │   └── MovieContext.jsx  # Global favourites state (Context + localStorage)
+│   │   └── MovieContext.jsx  # Global bookmarks state (Context + localStorage)
 │   ├── css/               # Per-component CSS files
 │   ├── pages/
 │   │   ├── Home.jsx       # Popular movies + search
-│   │   └── Favourite.jsx  # Saved favourites list
+│   │   └── Favourite.jsx  # Saved bookmarks list
 │   ├── services/
 │   │   └── Api.js         # TMDB API helpers (getPopularMovies, searchMovies)
 │   ├── App.jsx            # Route definitions

@@ -2,6 +2,7 @@ import '../css/MovieCard.css'
 import { useMovieContext } from "../contexts/MovieContext.jsx";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useUi } from "../contexts/UiContext.jsx";
+import { BsBookmarkPlus } from "react-icons/bs";
 
 function MovieCard({ movie }) {
     const { isFavorite, addToFavorites, removeFromFavorites, isWatched, setWatched } = useMovieContext()
@@ -49,7 +50,7 @@ function MovieCard({ movie }) {
             <div className="movie-overlay">
                 {!watched ? (
                     <button className={`favourite-btn ${favorite ? "active" : ""}`} onClick={onFavoriteClick}>
-                        ❤
+                        <BsBookmarkPlus />
                     </button>
                 ) : null}
                 <button className={`watched-btn ${watched ? "active" : ""}`} onClick={onWatchedClick} title="Mark as watched">
