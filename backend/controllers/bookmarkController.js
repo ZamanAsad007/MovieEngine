@@ -20,7 +20,7 @@ exports.getWatchedBookmarks = async (req, res) => {
 
 exports.addBookmark = async (req, res) => {
   try {
-    const { movieId, title, poster, rating } = req.body;
+    const { movieId, title, poster, rating, mediaType } = req.body;
 
     if (!movieId || !title) {
       return res.status(400).json({ message: 'movieId and title are required' });
@@ -35,6 +35,7 @@ exports.addBookmark = async (req, res) => {
         if (title) exists.title = exists.title || title;
         if (poster !== undefined) exists.poster = poster;
         if (rating !== undefined) exists.rating = rating;
+        if (mediaType) exists.mediaType = mediaType;
         const updated = await exists.save();
         return res.json(updated);
       }
@@ -49,6 +50,7 @@ exports.addBookmark = async (req, res) => {
       poster,
       rating,
       favorite: true,
+      mediaType: mediaType || 'movie',
     });
     res.status(201).json(bookmark);
   } catch (err) {
@@ -61,7 +63,7 @@ exports.setWatched = async (req, res) => {
     const { watched } = req.body;
     const isWatched = Boolean(watched);
 
-    const { title, poster, rating } = req.body;
+    const { title, poster, rating, mediaType } = req.body;
 
     // If we're creating a watched-only bookmark, we still need required fields.
     if (isWatched && !title) {
@@ -83,6 +85,7 @@ exports.setWatched = async (req, res) => {
               ...(poster ? { poster } : null),
               ...(rating !== undefined ? { rating } : null),
               favorite: false,
+              mediaType: mediaType || 'movie',
             },
           }
         : null),

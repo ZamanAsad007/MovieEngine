@@ -7,6 +7,7 @@ const bookmarkSchema = new mongoose.Schema({
   poster: { type: String },
   rating: { type: Number },
   favorite: { type: Boolean, default: false },
+  mediaType: { type: String, enum: ['movie', 'tv'], default: 'movie' },
   watched: { type: Boolean, default: false },
   watchedAt: { type: Date },
 }, { timestamps: true });
