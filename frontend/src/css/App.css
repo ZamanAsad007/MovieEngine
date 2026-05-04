@@ -13,3 +13,10 @@
     padding-top: calc(2rem + 56px);
   }
 }
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 1rem;
+    padding-top: calc(1rem + 56px);
+  }
+}

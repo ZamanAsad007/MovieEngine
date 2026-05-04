@@ -4,14 +4,29 @@ import { useSearchParams } from "react-router-dom";
 import { searchMovies, getPopularMovies, getTopRatedMovies, searchTvShows, getPopularTvShows, getTopRatedTvShows } from "../services/Api";
 import '../css/Home.css'
 function Home() {
-    const [searchParams] = useSearchParams();
-    const [mediaType, setMediaType] = useState("movie");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const mediaTypeParam = searchParams.get('type') === 'tv' ? 'tv' : 'movie';
+    const [mediaType, setMediaType] = useState(mediaTypeParam);
     const [searchQuery, setSearchQuery] = useState(""); 
     const [movies, setMovies] = useState([]);
     const [error, setError] = useState(null);
     const[loading, setLoading] = useState(true);
 
     const listType = searchParams.get('list') || 'popular';
+
+    useEffect(() => {
+        setMediaType(mediaTypeParam);
+    }, [mediaTypeParam]);
+
+    function setType(nextType) {
+        setMediaType(nextType);
+        setSearchQuery("");
+
+        const next = new URLSearchParams(searchParams);
+        if (nextType === 'tv') next.set('type', 'tv');
+        else next.delete('type');
+        setSearchParams(next, { replace: true });
+    }
 
     useEffect(()=>{
         const loadPopular = async()=>{
@@ -57,14 +72,14 @@ function Home() {
             <button
                 type="button"
                 className={`toggle-button ${mediaType === "movie" ? "active" : ""}`}
-                onClick={() => { setMediaType("movie"); setSearchQuery(""); }}
+                onClick={() => setType("movie")}
             >
                 Movies
             </button>
             <button
                 type="button"
                 className={`toggle-button ${mediaType === "tv" ? "active" : ""}`}
-                onClick={() => { setMediaType("tv"); setSearchQuery(""); }}
+                onClick={() => setType("tv")}
             >
                 TV Shows
             </button>

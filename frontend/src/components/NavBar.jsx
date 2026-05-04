@@ -1,17 +1,35 @@
 import '../css/NavBar.css'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { GiFilmProjector } from "react-icons/gi";
+import { GiHamburgerMenu } from "react-icons/gi";
 function NavBar(){
     const { isAuthenticated, user, logout } = useAuth()
     const [menuOpen, setMenuOpen] = useState(false)
     const location = useLocation()
+    const navRef = useRef(null)
 
     useEffect(() => {
         setMenuOpen(false)
     }, [location.pathname])
+
+    useEffect(() => {
+        if (!menuOpen) return
+
+        const onPointerDown = (e) => {
+            const root = navRef.current
+            if (!root) return
+            if (root.contains(e.target)) return
+            setMenuOpen(false)
+        }
+
+        document.addEventListener('pointerdown', onPointerDown)
+        return () => {
+            document.removeEventListener('pointerdown', onPointerDown)
+        }
+    }, [menuOpen])
 
     const onLogout = () => {
         logout()
@@ -20,7 +38,7 @@ function NavBar(){
 
     const closeMenu = () => setMenuOpen(false)
 
-    return <nav className="navbar">
+    return <nav className="navbar" ref={navRef}>
         <Link to="/" className="navbar-title">
             <GiFilmProjector style={{ color: '#e50914', fontSize: '2rem' }} />
             <span>movieEngine</span>
@@ -32,7 +50,7 @@ function NavBar(){
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(v => !v)}
         >
-            ⋮
+            <GiHamburgerMenu />
         </button>
 
         <ul className="navbar-links">
@@ -56,7 +74,9 @@ function NavBar(){
         </ul>
 
         {menuOpen ? (
-            <div className="navbar-menu" role="menu">
+            <>
+                <div className="navbar-backdrop" onClick={closeMenu} aria-hidden="true" />
+                <div className="navbar-menu" role="menu">
                 <Link className="navbar-menuItem" to="/favourites" onClick={closeMenu}>Bookmarks</Link>
                 <Link className="navbar-menuItem" to="/watched" onClick={closeMenu}>Watched</Link>
                 {!isAuthenticated ? (
@@ -70,7 +90,8 @@ function NavBar(){
                         <button className="navbar-menuItem" onClick={onLogout}>Logout</button>
                     </>
                 )}
-            </div>
+                </div>
+            </>
         ) : null}
     </nav>
 }
