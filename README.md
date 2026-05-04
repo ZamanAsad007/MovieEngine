@@ -12,11 +12,22 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 
 ## Features
 
-- **Popular movies** — loads trending movies from TMDB
-- **Search** — search movies by title
+- **Browse movies & TV shows** — browse popular/top-rated movies and TV shows from TMDB
+- **Search** — search movies and TV shows by title with toggle between media types
+- **Detail pages** — comprehensive movie/TV show details including cast, crew, trailers, and ratings
+  - Dual routing: `/movie/:id` for movies, `/tv/:id` for TV shows
+  - Director/Creator shown first in cast carousel
+  - YouTube trailer embedding with intelligent fallback selection
+  - Seasons count for TV shows, episode runtime display
+- **Multi-source ratings** — show IMDb, Rotten Tomatoes, and Metacritic ratings via OMDb API
 - **Auth** — email/password login + Google OAuth
 - **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
+- **Scroll restoration** — back navigation returns to previous scroll position
+- **Mobile optimized** — responsive design with 2 columns (phone) / 4 columns (tablet)
+  - Always-visible action buttons on mobile
+  - Hamburger menu with outside-click detection
+  - Stack-friendly form layouts on small screens
 
 ---
 
@@ -53,19 +64,30 @@ frontend/
 │   └── 404.html          # SPA fallback (client-side routing)
 ├── src/
 │   ├── components/
-│   │   ├── NavBar.jsx     # Fixed top navigation bar
-│   │   └── movieCard.jsx  # Movie card with poster, title, year and bookmark button
+│   │   ├── NavBar.jsx              # Fixed top navigation bar with hamburger menu
+│   │   ├── movieCard.jsx           # Movie/TV card with poster, title, year, actions
+│   │   ├── ScrollRestoration.jsx   # Session-based scroll position memory
+│   │   ├── AuthRequiredModal.jsx   # Auth prompt modal
+│   │   └── Footer.jsx              # Site footer with links
 │   ├── contexts/
-│   │   └── MovieContext.jsx  # Global bookmarks state (Context + localStorage)
-│   ├── css/               # Per-component CSS files
+│   │   ├── MovieContext.jsx        # Global bookmarks/watched state
+│   │   ├── AuthContext.jsx         # Auth state (user, tokens)
+│   │   └── UiContext.jsx           # UI state (modals, etc.)
+│   ├── css/                        # Per-component CSS files + responsive breakpoints
 │   ├── pages/
-│   │   ├── Home.jsx       # Popular movies + search
-│   │   └── Favourite.jsx  # Saved bookmarks list
+│   │   ├── Home.jsx                # Popular/top-rated movies + search with type toggle
+│   │   ├── MovieDetail.jsx         # Movie/TV show detail page (supports both via mediaType prop)
+│   │   ├── Favourite.jsx           # Saved bookmarks list
+│   │   ├── Watched.jsx             # Watched items list
+│   │   ├── Login.jsx               # Login page
+│   │   ├── Register.jsx            # Signup page
+│   │   └── About.jsx, Privacy.jsx, Terms.jsx  # Info pages
 │   ├── services/
-│   │   └── Api.js         # TMDB API helpers (getPopularMovies, searchMovies)
-│   ├── App.jsx            # Route definitions
-│   └── main.jsx           # React entry point
-├── .env.example           # Environment variable template
+│   │   ├── Api.js                  # TMDB API helpers (movies, TV, details, ratings)
+│   │   └── backendApi.js           # Backend auth/user API helpers
+│   ├── App.jsx                     # Route definitions (including /movie/:id and /tv/:id)
+│   └── main.jsx                    # React entry point
+├── .env.example                    # Environment variable template
 └── vite.config.js
 ```
 
@@ -98,7 +120,8 @@ npm install
 
 # Create frontend/.env
 # Required: VITE_TMDB_API_KEY
-# Optional: VITE_BACKEND_URL=http://localhost:5000
+# Optional: VITE_BACKEND_URL=http://localhost:5000 (default: http://localhost:5000)
+# Optional: VITE_OMDB_API_KEY (for multi-source ratings on detail pages)
 
 npm run dev
 ```
@@ -122,7 +145,13 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 ## Deployment notes
 
-- **Frontend (Vercel):** set `VITE_TMDB_API_KEY` and (optionally) `VITE_BACKEND_URL=https://movieengine.onrender.com`.
+- **Frontend (Vercel):** set `VITE_TMDB_API_KEY` and optionally `VITE_BACKEND_URL=https://movieengine.onrender.com`, `VITE_OMDB_API_KEY`.
 - **Backend (Render):** set `MONGO_URI`, `JWT_SECRET`, `SESSION_SECRET`, `FRONTEND_ORIGIN=https://movie-engine-five.vercel.app`.
 - **Google OAuth:** in Google Cloud Console add Authorized redirect URI:
    - `https://movieengine.onrender.com/api/auth/google/callback`
+
+## API Integration
+
+- **TMDB** — all movie/TV show data, credits, videos, external IDs
+- **OMDb** — supplementary ratings (IMDb, Rotten Tomatoes, Metacritic) on detail pages
+- **Backend** — user auth, bookmarks, watched lists (MongoDB)
