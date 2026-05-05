@@ -1,25 +1,33 @@
 const { getGeminiRecommendations } = require("../services/geminiService");
 
-// Parse movie titles from Gemini's formatted response
-// Looks for lines starting with 🎬
-const extractMovieTitles = (text) => {
-  const lines = text.split("\n");
-  const titles = [];
+// Parse recommendations from Gemini's formatted response.
+// Looks for lines starting with 🎬 (movie) or 📺 (tv)
+const extractRecommendations = (text) => {
+  const lines = String(text || "").split("\n");
+  const items = [];
 
-  for (const line of lines) {
-    if (line.startsWith("🎬")) {
-      // Extract title from: 🎬 The Dark Knight (2008)
-      const match = line.match(/🎬\s+(.+?)\s+\((\d{4})\)/);
-      if (match) {
-        titles.push({
-          title: match[1].trim(),
-          year: match[2].trim()
-        });
-      }
-    }
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    const isMovie = line.startsWith("🎬");
+    const isTv = line.startsWith("📺");
+    if (!isMovie && !isTv) continue;
+
+    // Extract title/year from:
+    // 🎬 The Dark Knight (2008)
+    // 📺 Breaking Bad (2008)
+    const match = line.match(/^[🎬📺]\s+(.+?)\s*\((\d{4})\)\s*$/);
+    if (!match) continue;
+
+    items.push({
+      mediaType: isTv ? "tv" : "movie",
+      title: match[1].trim(),
+      year: match[2].trim(),
+    });
   }
 
-  return titles;
+  return items;
 };
 
 const recommend = async (req, res) => {
@@ -39,7 +47,7 @@ const recommend = async (req, res) => {
       safeHistory
     );
 
-    const extractedTitles = extractMovieTitles(replyText);
+    const extractedTitles = extractRecommendations(replyText);
 
     res.json({
       reply: replyText,

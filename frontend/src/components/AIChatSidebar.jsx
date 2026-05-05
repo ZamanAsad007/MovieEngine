@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAIRecommendations } from "../services/aiApi";
-import { searchMovieByTitle } from "../services/Api";
+import { searchMovieByTitle, searchTvByTitle } from "../services/Api";
 import "../css/AIChatSidebar.css";
 import { useAuth } from "../contexts/AuthContext.jsx";
 
@@ -67,12 +67,18 @@ export default function AIChatSidebar({ isOpen, onClose }) {
 
       setHistory(updatedHistory);
 
-      const movies = await Promise.all(
-        (extractedTitles || []).map(({ title, year }) => searchMovieByTitle(title, year))
+      const results = await Promise.all(
+        (extractedTitles || []).map(async ({ title, year, mediaType }) => {
+          const type = mediaType === "tv" ? "tv" : "movie";
+          const item = type === "tv"
+            ? await searchTvByTitle(title, year)
+            : await searchMovieByTitle(title, year);
+          return item ? { ...item, __mediaType: type } : null;
+        })
       );
-      const validMovies = movies.filter(Boolean);
+      const validResults = results.filter(Boolean);
 
-      setMessages((prev) => [...prev, { role: "ai", text: reply, movies: validMovies }]);
+      setMessages((prev) => [...prev, { role: "ai", text: reply, movies: validResults }]);
     } catch (error) {
       console.error("AI sidebar error:", error);
       const isDev = import.meta.env.DEV;
@@ -117,7 +123,7 @@ export default function AIChatSidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className="ai-sidebar-subtitle">I will suggest 4 movies.</div>
+        <div className="ai-sidebar-subtitle">I will suggest 4 picks (movies or TV shows).</div>
 
         <div className="ai-chat-window" ref={chatWindowRef}>
           {!isAuthenticated ? (
@@ -154,25 +160,31 @@ export default function AIChatSidebar({ isOpen, onClose }) {
                   {msg.movies?.length > 0 && (
                     <div className="ai-movies-grid">
                       {msg.movies.map((movie) => (
+                        (() => {
+                          const mediaType = movie.__mediaType === "tv" ? "tv" : "movie";
+                          const href = mediaType === "tv" ? `/tv/${movie.id}` : `/movie/${movie.id}`;
+                          const title = mediaType === "tv" ? movie.name : movie.title;
+                          const year = (mediaType === "tv" ? movie.first_air_date : movie.release_date)?.split("-")[0];
+                          return (
                         <Link
                           key={movie.id}
-                          to={`/movie/${movie.id}`}
+                          to={href}
                           className="ai-movie-card"
                           onClick={onClose}
                         >
                           {movie.poster_path ? (
                             <img
                               src={`https://image.tmdb.org/t/p/w185${movie.poster_path}`}
-                              alt={movie.title}
+                              alt={title}
                             />
                           ) : (
                             <div className="ai-no-poster">No Image</div>
                           )}
-                          <span className="ai-movie-title">{movie.title}</span>
-                          <span className="ai-movie-year">
-                            {movie.release_date?.split("-")[0]}
-                          </span>
+                          <span className="ai-movie-title">{title}</span>
+                          <span className="ai-movie-year">{year || ""}</span>
                         </Link>
+                          );
+                        })()
                       ))}
                     </div>
                   )}

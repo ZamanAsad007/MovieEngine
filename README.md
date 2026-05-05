@@ -24,11 +24,11 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 - **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
 - **Scroll restoration** — back navigation returns to previous scroll position
-- **AI Movie Recommender** — ask Gemini 2.5 Flash for personalized movie recommendations based on mood/genre/theme
+- **AI Recommender (Movies + TV)** — ask Gemini 2.5 Flash for personalized recommendations based on mood/genre/theme
   - Floating animated button with pulse rings (bottom-right corner)
   - Persistent chat sidebar with conversation history
   - JWT-protected endpoint with rate limiting (10 requests per 15 minutes)
-  - Auto-expand hint on first visit to prompt user engagement
+  - Auto-expand hint on load to prompt user engagement
   - Mobile optimized with responsive sizing
 - **Mobile optimized** — responsive design with 2 columns (phone) / 4 columns (tablet)
   - Always-visible action buttons on mobile
@@ -46,7 +46,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 | Build | Vite 5 |
 | State | React Context API |
 | Backend | Node.js + Express |
-| AI | Google Gemini 2.0 Flash |
+| AI | Google Gemini 2.5 Flash |
 | Auth | Passport (Local + Google OAuth) + JWT |
 | Database | MongoDB Atlas + Mongoose |
 | Data | TMDB REST API |
@@ -177,5 +177,5 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 - **TMDB** — all movie/TV show data, credits, videos, external IDs
 - **OMDb** — supplementary ratings (IMDb, Rotten Tomatoes, Metacritic) on detail pages
-- **Gemini** — AI-powered movie recommendations based on user mood/preferences (JWT-protected, rate-limited)
+- **Gemini** — AI-powered movie + TV recommendations based on user mood/preferences (JWT-protected, rate-limited)
 - **Backend** — user auth, bookmarks, watched lists (MongoDB)
