@@ -157,3 +157,19 @@ export const getOMDbRatings = async (imdbId) => {
     if (data?.Response === "False") return null;
     return data;
 };
+
+export const searchMovieByTitle = async (title, year) => {
+    if (!API_KEY) {
+        throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).");
+    }
+    
+    const response = await fetch(
+        `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(title)}&year=${year}&page=1`
+    );
+    if (!response.ok) {
+        throw new Error(`TMDB request failed: ${response.status}`);
+    }
+    const data = await response.json();
+    // Return best match — first result
+    return data.results?.[0] || null;
+};

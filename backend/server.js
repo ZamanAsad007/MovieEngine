@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const session = require('express-session');
 const passport = require('passport');
+const { generalLimiter } = require('./middleware/rateLimiter');
 const app = express();
 dotenv.config();
 require('./config/passport');
@@ -50,15 +51,21 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+app.use(generalLimiter);
+
 app.get('/', (req, res) => {
   res.send('MovieEngine API is running');
 });
 
 const authRoutes = require('./routes/authRoutes')
 const bookmarkRoutes = require('./routes/bookmarkRoutes')
+const aiRoutes = require('./routes/ai')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/ai', aiRoutes);
 
 const mongoUri = process.env.MONGO_URI_TEST || process.env.MONGO_URI;
 if (!mongoUri) {
