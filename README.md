@@ -24,7 +24,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 - **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
 - **Scroll restoration** — back navigation returns to previous scroll position
-- **AI Movie Recommender** — ask Gemini 2.0 Flash for personalized movie recommendations based on mood/genre/theme
+- **AI Movie Recommender** — ask Gemini 2.5 Flash for personalized movie recommendations based on mood/genre/theme
   - Floating animated button with pulse rings (bottom-right corner)
   - Persistent chat sidebar with conversation history
   - JWT-protected endpoint with rate limiting (10 requests per 15 minutes)
