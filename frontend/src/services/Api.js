@@ -173,3 +173,20 @@ export const searchMovieByTitle = async (title, year) => {
     // Return best match — first result
     return data.results?.[0] || null;
 };
+
+export const searchTvByTitle = async (title, year) => {
+    if (!API_KEY) {
+        throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).");
+    }
+
+    const yearParam = year ? `&first_air_date_year=${encodeURIComponent(year)}` : "";
+    const response = await fetch(
+        `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(title)}${yearParam}&page=1`
+    );
+    if (!response.ok) {
+        throw new Error(`TMDB request failed: ${response.status}`);
+    }
+    const data = await response.json();
+    // Return best match — first result
+    return data.results?.[0] || null;
+};
