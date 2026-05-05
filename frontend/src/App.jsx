@@ -11,14 +11,17 @@ import Terms from './pages/Terms.jsx';
 import MovieDetail from './pages/MovieDetail.jsx';
 import NavBar from './components/NavBar.jsx';
 import Footer from './components/Footer.jsx';
+import FloatingAI from './components/FloatingAI.jsx';
+import AIChatSidebar from './components/AIChatSidebar.jsx';
 import {MovieProvider} from './contexts/MovieContext.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { UiProvider } from './contexts/UiContext.jsx';
 import AuthRequiredModal from './components/AuthRequiredModal.jsx';
 import ScrollRestoration from './components/ScrollRestoration.jsx';
+import { useState } from 'react';
 
 function App() {
-
+  const [aiOpen, setAiOpen] = useState(false);
 
   return (
     <UiProvider>
@@ -27,6 +30,8 @@ function App() {
           <ScrollRestoration />
           <NavBar />
           <AuthRequiredModal />
+          <AIChatSidebar isOpen={aiOpen} onClose={() => setAiOpen(false)} />
+          {!aiOpen && <FloatingAI onOpen={() => setAiOpen(true)} />}
           <main className='main-content'>
             <Routes>
               <Route path="/" element={<Home />} />

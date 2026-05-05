@@ -1,0 +1,139 @@
+/* ── Wrapper ───────────────────────────────────── */
+.floating-ai-wrapper {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Main button ───────────────────────────────── */
+.floating-ai-btn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #e50914, #b20710);
+  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.5);
+  overflow: hidden;
+  transition: width 0.4s ease, border-radius 0.4s ease,
+              padding 0.4s ease, box-shadow 0.2s ease;
+  animation: fabBounce 3s ease-in-out infinite;
+}
+
+/* Expanded state — triggered by highlighted class */
+.floating-ai-btn--highlighted {
+  width: 210px;
+  border-radius: 30px;
+  padding: 0 1.2rem 0 0.8rem;
+  box-shadow: 0 6px 28px rgba(229, 9, 20, 0.75);
+  animation: none; /* stop bounce when expanded */
+}
+
+.floating-ai-btn:hover {
+  width: 210px;
+  border-radius: 30px;
+  padding: 0 1.2rem 0 0.8rem;
+  box-shadow: 0 6px 28px rgba(229, 9, 20, 0.75);
+  animation: none;
+}
+
+/* ── Icon ──────────────────────────────────────── */
+.floating-ai-icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.floating-ai-btn--highlighted .floating-ai-icon,
+.floating-ai-btn:hover .floating-ai-icon {
+  transform: scale(1.15);
+}
+
+/* ── Text ──────────────────────────────────────── */
+.floating-ai-text {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+  margin-left: 0;
+}
+
+.floating-ai-text--visible,
+.floating-ai-btn:hover .floating-ai-text {
+  max-width: 190px;
+  opacity: 1;
+  margin-left: 0.5rem;
+}
+
+/* ── Bounce animation ──────────────────────────── */
+@keyframes fabBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+
+/* ── Pulse rings ───────────────────────────────── */
+.floating-ai-pulse-ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(229, 9, 20, 0.55);
+  animation: fabPulse 2s ease-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.floating-ai-pulse-ring--delay {
+  animation-delay: 1s;
+}
+
+@keyframes fabPulse {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ── Responsive (mobile) ───────────────────────── */
+@media (max-width: 480px) {
+  .floating-ai-wrapper {
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .floating-ai-btn {
+    width: 54px;
+    height: 54px;
+  }
+
+  .floating-ai-pulse-ring {
+    width: 54px;
+    height: 54px;
+  }
+
+  .floating-ai-btn--highlighted,
+  .floating-ai-btn:hover {
+    width: 200px;
+  }
+
+  .floating-ai-text {
+    font-size: 0.85rem;
+  }
+
+  .floating-ai-text--visible,
+  .floating-ai-btn:hover .floating-ai-text {
+    max-width: 150px;
+  }
+}

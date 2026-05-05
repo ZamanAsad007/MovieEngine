@@ -24,6 +24,12 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 - **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
 - **Scroll restoration** — back navigation returns to previous scroll position
+- **AI Movie Recommender** — ask Gemini 2.0 Flash for personalized movie recommendations based on mood/genre/theme
+  - Floating animated button with pulse rings (bottom-right corner)
+  - Persistent chat sidebar with conversation history
+  - JWT-protected endpoint with rate limiting (10 requests per 15 minutes)
+  - Auto-expand hint on first visit to prompt user engagement
+  - Mobile optimized with responsive sizing
 - **Mobile optimized** — responsive design with 2 columns (phone) / 4 columns (tablet)
   - Always-visible action buttons on mobile
   - Hamburger menu with outside-click detection
@@ -40,6 +46,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 | Build | Vite 5 |
 | State | React Context API |
 | Backend | Node.js + Express |
+| AI | Google Gemini 2.0 Flash |
 | Auth | Passport (Local + Google OAuth) + JWT |
 | Database | MongoDB Atlas + Mongoose |
 | Data | TMDB REST API |
@@ -68,12 +75,16 @@ frontend/
 │   │   ├── movieCard.jsx           # Movie/TV card with poster, title, year, actions
 │   │   ├── ScrollRestoration.jsx   # Session-based scroll position memory
 │   │   ├── AuthRequiredModal.jsx   # Auth prompt modal
+│   │   ├── FloatingAI.jsx          # Floating animated button with pulse rings for AI recommender
+│   │   ├── AIChatSidebar.jsx       # Chat sidebar for AI conversation & movie recommendations
 │   │   └── Footer.jsx              # Site footer with links
 │   ├── contexts/
 │   │   ├── MovieContext.jsx        # Global bookmarks/watched state
 │   │   ├── AuthContext.jsx         # Auth state (user, tokens)
 │   │   └── UiContext.jsx           # UI state (modals, etc.)
 │   ├── css/                        # Per-component CSS files + responsive breakpoints
+│   │   ├── FloatingAI.css          # Floating button animations (bounce, pulse, expand)
+│   │   └── AIChatSidebar.css       # Sidebar chat UI
 │   ├── pages/
 │   │   ├── Home.jsx                # Popular/top-rated movies + search with type toggle
 │   │   ├── MovieDetail.jsx         # Movie/TV show detail page (supports both via mediaType prop)
@@ -84,7 +95,17 @@ frontend/
 │   │   └── About.jsx, Privacy.jsx, Terms.jsx  # Info pages
 │   ├── services/
 │   │   ├── Api.js                  # TMDB API helpers (movies, TV, details, ratings)
+│   │   ├── aiApi.js                # Gemini AI recommendation endpoint communication
 │   │   └── backendApi.js           # Backend auth/user API helpers
+│   ├── backend/
+│   │   ├── controllers/
+│   │   │   └── aiController.js     # AI recommendation logic & Gemini response parsing
+│   │   ├── middleware/
+│   │   │   └── rateLimiter.js      # express-rate-limit configuration for AI & general routes
+│   │   ├── routes/
+│   │   │   └── ai.js               # POST /api/ai/recommend with auth & rate limit
+│   │   └── services/
+│   │       └── geminiService.js    # Gemini API calls with system prompt & history
 │   ├── App.jsx                     # Route definitions (including /movie/:id and /tv/:id)
 │   └── main.jsx                    # React entry point
 ├── .env.example                    # Environment variable template
@@ -110,6 +131,7 @@ npm install
 
 # Create backend/.env (copy keys from backend/.env.example if you have one)
 # Required: MONGO_URI, JWT_SECRET, SESSION_SECRET
+# For AI (Gemini): GEMINI_API_KEY
 # For Google OAuth (optional locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
 npm start
@@ -147,6 +169,7 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 - **Frontend (Vercel):** set `VITE_TMDB_API_KEY` and optionally `VITE_BACKEND_URL=https://movieengine.onrender.com`, `VITE_OMDB_API_KEY`.
 - **Backend (Render):** set `MONGO_URI`, `JWT_SECRET`, `SESSION_SECRET`, `FRONTEND_ORIGIN=https://movie-engine-five.vercel.app`.
+- **Gemini API (Backend):** set `GEMINI_API_KEY` from [Google AI Studio](https://aistudio.google.com/apikey) with billing enabled.
 - **Google OAuth:** in Google Cloud Console add Authorized redirect URI:
    - `https://movieengine.onrender.com/api/auth/google/callback`
 
@@ -154,4 +177,5 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 - **TMDB** — all movie/TV show data, credits, videos, external IDs
 - **OMDb** — supplementary ratings (IMDb, Rotten Tomatoes, Metacritic) on detail pages
+- **Gemini** — AI-powered movie recommendations based on user mood/preferences (JWT-protected, rate-limited)
 - **Backend** — user auth, bookmarks, watched lists (MongoDB)
