@@ -150,103 +150,105 @@ function PublicProfile() {
         </div>
       </header>
 
-      <section className="profile-section">
-        <h2 className="profile-section-title">🔖 Bookmarks</h2>
-        <div className="media-tabs">
-          <button
-            type="button"
-            className={`media-tab ${bookmarkTab === "movies" ? "active" : ""}`}
-            onClick={() => setBookmarkTab("movies")}
-          >
-            Movies
-          </button>
-          <button
-            type="button"
-            className={`media-tab ${bookmarkTab === "tv" ? "active" : ""}`}
-            onClick={() => setBookmarkTab("tv")}
-          >
-            TV Shows
-          </button>
-        </div>
-
-        {bookmarkList.length === 0 ? (
-          <p className="empty-state">
-            No {bookmarkTab === "tv" ? "TV shows" : "movies"} here yet.
-          </p>
-        ) : (
-          <div className="profile-cards-grid">
-            {bookmarkList.map((item) => (
-              <button
-                key={`${item.mediaType}-${item.movieId}`}
-                type="button"
-                className="profile-movie-card"
-                onClick={() => openDetail(item)}
-              >
-                <div className="profile-movie-poster">
-                  {resolvePosterUrl(item.poster) ? (
-                    <img src={resolvePosterUrl(item.poster)} alt={item.title} />
-                  ) : (
-                    <div className="profile-movie-poster--empty" />
-                  )}
-                </div>
-                <div className="profile-movie-info">
-                  <div className="profile-movie-title">{item.title}</div>
-                  <div className="profile-movie-year">—</div>
-                </div>
-              </button>
-            ))}
+      <div className="profile-sections-grid">
+        <section className="profile-section">
+          <h2 className="profile-section-title">Bookmarks</h2>
+          <div className="media-tabs">
+            <button
+              type="button"
+              className={`media-tab ${bookmarkTab === "movies" ? "active" : ""}`}
+              onClick={() => setBookmarkTab("movies")}
+            >
+              Movies
+            </button>
+            <button
+              type="button"
+              className={`media-tab ${bookmarkTab === "tv" ? "active" : ""}`}
+              onClick={() => setBookmarkTab("tv")}
+            >
+              TV Shows
+            </button>
           </div>
-        )}
-      </section>
 
-      <section className="profile-section">
-        <h2 className="profile-section-title">✅ Watched</h2>
-        <div className="media-tabs">
-          <button
-            type="button"
-            className={`media-tab ${watchedTab === "movies" ? "active" : ""}`}
-            onClick={() => setWatchedTab("movies")}
-          >
-            Movies
-          </button>
-          <button
-            type="button"
-            className={`media-tab ${watchedTab === "tv" ? "active" : ""}`}
-            onClick={() => setWatchedTab("tv")}
-          >
-            TV Shows
-          </button>
-        </div>
+          {bookmarkList.length === 0 ? (
+            <p className="empty-state">
+              No {bookmarkTab === "tv" ? "TV shows" : "movies"} here yet.
+            </p>
+          ) : (
+            <div className="profile-cards-grid">
+              {bookmarkList.map((item) => (
+                <button
+                  key={`${item.mediaType}-${item.movieId}`}
+                  type="button"
+                  className="profile-movie-card"
+                  onClick={() => openDetail(item)}
+                >
+                  <div className="profile-movie-poster">
+                    {resolvePosterUrl(item.poster) ? (
+                      <img src={resolvePosterUrl(item.poster)} alt={item.title} />
+                    ) : (
+                      <div className="profile-movie-poster--empty" />
+                    )}
+                  </div>
+                  <div className="profile-movie-info">
+                    <div className="profile-movie-title">{item.title}</div>
+                    <div className="profile-movie-year">—</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
 
-        {watchedList.length === 0 ? (
-          <p className="empty-state">
-            No {watchedTab === "tv" ? "TV shows" : "movies"} here yet.
-          </p>
-        ) : (
-          <div className="profile-cards-grid">
-            {watchedList.map((item) => (
-              <button
-                key={`${item.mediaType}-${item.movieId}-${item.watchedAt || ""}`}
-                type="button"
-                className="profile-movie-card"
-                onClick={() => openDetail(item)}
-              >
-                <div className="profile-movie-poster">
-                  {resolvePosterUrl(item.poster) ? (
-                    <img src={resolvePosterUrl(item.poster)} alt={item.title} />
-                  ) : (
-                    <div className="profile-movie-poster--empty" />
-                  )}
-                </div>
-                <div className="profile-movie-info">
-                  <div className="profile-movie-title">{item.title}</div>
-                  <div className="profile-movie-year">—</div>
-                </div>
-              </button>
-            ))}
+        <section className="profile-section">
+          <h2 className="profile-section-title">Watched</h2>
+          <div className="media-tabs">
+            <button
+              type="button"
+              className={`media-tab ${watchedTab === "movies" ? "active" : ""}`}
+              onClick={() => setWatchedTab("movies")}
+            >
+              Movies
+            </button>
+            <button
+              type="button"
+              className={`media-tab ${watchedTab === "tv" ? "active" : ""}`}
+              onClick={() => setWatchedTab("tv")}
+            >
+              TV Shows
+            </button>
           </div>
-        )}
-      </section>
+
+          {watchedList.length === 0 ? (
+            <p className="empty-state">
+              No {watchedTab === "tv" ? "TV shows" : "movies"} here yet.
+            </p>
+          ) : (
+            <div className="profile-cards-grid">
+              {watchedList.map((item) => (
+                <button
+                  key={`${item.mediaType}-${item.movieId}-${item.watchedAt || ""}`}
+                  type="button"
+                  className="profile-movie-card"
+                  onClick={() => openDetail(item)}
+                >
+                  <div className="profile-movie-poster">
+                    {resolvePosterUrl(item.poster) ? (
+                      <img src={resolvePosterUrl(item.poster)} alt={item.title} />
+                    ) : (
+                      <div className="profile-movie-poster--empty" />
+                    )}
+                  </div>
+                  <div className="profile-movie-info">
+                    <div className="profile-movie-title">{item.title}</div>
+                    <div className="profile-movie-year">—</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
