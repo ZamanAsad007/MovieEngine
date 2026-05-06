@@ -76,7 +76,27 @@ function Footer() {
           <h3 className="footer-col-title">Info</h3>
           <ul className="footer-links">
             <li><Link to="/about">About</Link></li>
-            <li><a href="mailto:asadasif1704@gmail.com">Contact</a></li>
+            <li>
+              <a
+                href={
+                  "mailto:asadasif1704@gmail.com" +
+                  "?subject=" +
+                  encodeURIComponent("MovieEngine — Contact") +
+                  "&body=" +
+                  encodeURIComponent(
+                    "Hi Asad,%0D%0A%0D%0A" +
+                      "I have a question/feedback about MovieEngine:%0D%0A" +
+                      "- What I was doing:%0D%0A" +
+                      "- What I expected:%0D%0A" +
+                      "- What happened:%0D%0A%0D%0A" +
+                      "Browser/Device:%0D%0A%0D%0A" +
+                      "Thanks!"
+                  )
+                }
+              >
+                Contact
+              </a>
+            </li>
             <li><Link to="/privacy">Privacy Policy</Link></li>
             <li><Link to="/terms">Terms of Use</Link></li>
           </ul>

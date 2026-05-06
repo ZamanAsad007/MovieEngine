@@ -8,6 +8,57 @@
   margin-bottom: 1rem;
 }
 
+.auth-google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+}
+
+.auth-google-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-google-logo {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+.auth-success {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.08);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  color: #bfe7c2;
+}
+  margin: 1rem 0;
+  opacity: 0.85;
+}
+
+.auth-or hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-or span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: lowercase;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;

@@ -62,10 +62,12 @@ app.get('/', (req, res) => {
 const authRoutes = require('./routes/authRoutes')
 const bookmarkRoutes = require('./routes/bookmarkRoutes')
 const aiRoutes = require('./routes/ai')
+const userRoutes = require('./routes/user')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/user', userRoutes);
 
 const mongoUri = process.env.MONGO_URI_TEST || process.env.MONGO_URI;
 if (!mongoUri) {
