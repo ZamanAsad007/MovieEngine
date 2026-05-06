@@ -6,82 +6,82 @@ const OMDB_BASE_URL = "https://www.omdbapi.com";
 const OMDB_API_KEY = import.meta.env.VITE_OMDB_API_KEY;
 
 
-export const getPopularMovies = async () => {  
+export const getPopularMovies = async (page = 1) => {  
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+    const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 };
 
-export const getTopRatedMovies = async () => {
+export const getTopRatedMovies = async (page = 1) => {
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
+    const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 };
 
-export const searchMovies = async (query) => {
+export const searchMovies = async (query, page = 1) => {
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+    const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 }
 
-export const getPopularTvShows = async () => {
+export const getPopularTvShows = async (page = 1) => {
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`);
+    const response = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 };
 
-export const getTopRatedTvShows = async () => {
+export const getTopRatedTvShows = async (page = 1) => {
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}`);
+    const response = await fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 };
 
-export const searchTvShows = async (query) => {
+export const searchTvShows = async (query, page = 1) => {
     if (!API_KEY) {
         throw new Error("Missing VITE_TMDB_API_KEY. Create frontend/.env (see frontend/.env.example).")
     }
 
-    const response = await fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+    const response = await fetch(`${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`);
     if (!response.ok) {
         throw new Error(`TMDB request failed: ${response.status}`)
     }
     const data = await response.json();
-    return data.results;
+    return data;
 }
 
 export const getMovieDetails = async (movieId) => {

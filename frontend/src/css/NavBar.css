@@ -13,6 +13,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .navbar-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -115,5 +121,172 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+/* ── Profile wrapper ───────────────────────── */
+.nav-profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 1002;
+}
+
+/* ── Avatar trigger button ─────────────────── */
+.nav-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 50px;
+  padding: 2px 6px 2px 2px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.nav-avatar-btn:hover,
+.nav-avatar-btn.active {
+  border-color: #e50914;
+  background: rgba(229, 9, 20, 0.08);
+}
+
+.nav-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1a1a1a;
+}
+
+.nav-avatar-chevron {
+  font-size: 0.7rem;
+  color: #aaa;
+  transition: transform 0.2s ease;
+}
+
+.nav-avatar-btn.active .nav-avatar-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown ──────────────────────────────── */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 1002;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Dropdown header ───────────────────────── */
+.nav-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  pointer-events: none; /* not clickable */
+}
+
+.nav-dropdown-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #111;
+  flex-shrink: 0;
+}
+
+.nav-dropdown-userinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow: hidden;
+}
+
+.nav-dropdown-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-dropdown-username {
+  font-size: 0.78rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Divider ───────────────────────────────── */
+.nav-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0;
+}
+
+/* ── Dropdown items ────────────────────────── */
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #ddd;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.nav-dropdown-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Logout — danger color */
+.nav-dropdown-item--danger {
+  color: #e55;
+}
+
+.nav-dropdown-item--danger:hover {
+  background: rgba(229, 9, 20, 0.1);
+  color: #ff4444;
+}
+
+/* ── Mobile ────────────────────────────────── */
+@media (max-width: 480px) {
+  .nav-dropdown {
+    right: -0.5rem;
+    min-width: 200px;
   }
 }

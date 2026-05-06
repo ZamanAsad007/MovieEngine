@@ -1,0 +1,109 @@
+.verify-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.verify-card {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.verify-emoji {
+  font-size: 3rem;
+}
+
+.verify-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.verify-message {
+  color: #aaa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.verify-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.verify-btn:hover {
+  background: #b20710;
+}
+
+.resend-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.resend-input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.resend-success {
+  color: #4caf50;
+  font-size: 0.9rem;
+}
+
+.resend-error {
+  color: #e55;
+  font-size: 0.9rem;
+}
+
+.login-resend-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(229, 9, 20, 0.08);
+  border: 1px solid rgba(229, 9, 20, 0.2);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.login-resend-box button {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: #e50914;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-resend-box button:hover {
+  background: #b20710;
+}

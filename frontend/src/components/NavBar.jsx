@@ -1,18 +1,43 @@
 import '../css/NavBar.css'
-import { Link } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { useAuth } from '../contexts/AuthContext.jsx'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { GiFilmProjector } from "react-icons/gi";
 import { GiHamburgerMenu } from "react-icons/gi";
+
+const getAvatarUrl = (avatar, label = 'User') => {
+    if (typeof avatar === 'string' && avatar.trim().length > 0) return avatar
+
+    const safeLabel = typeof label === 'string' && label.trim().length > 0 ? label.trim() : 'User'
+    const initials = safeLabel
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0])
+        .join('')
+        .toUpperCase()
+
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <rect width="96" height="96" rx="48" fill="#1a1a1a"/>
+  <text x="48" y="54" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="34" fill="#e5e5e5">${initials || 'U'}</text>
+</svg>`
+
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
+}
+
 function NavBar(){
     const { isAuthenticated, user, logout } = useAuth()
     const [menuOpen, setMenuOpen] = useState(false)
+    const [dropdownOpen, setDropdownOpen] = useState(false)
     const location = useLocation()
+    const navigate = useNavigate()
     const navRef = useRef(null)
+    const dropdownRef = useRef(null)
 
     useEffect(() => {
-        setMenuOpen(false)
+        setMenuOpen(prev => (prev ? false : prev))
+        setDropdownOpen(prev => (prev ? false : prev))
     }, [location.pathname])
 
     useEffect(() => {
@@ -31,9 +56,42 @@ function NavBar(){
         }
     }, [menuOpen])
 
-    const onLogout = () => {
-        logout()
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setDropdownOpen(false)
+        }
+        window.addEventListener('keydown', handleEsc)
+        return () => window.removeEventListener('keydown', handleEsc)
+    }, [])
+
+    const handleLogout = () => {
+        setDropdownOpen(false)
         setMenuOpen(false)
+        logout()
+        navigate('/')
+    }
+
+    const handleShareProfile = () => {
+        setDropdownOpen(false)
+        setMenuOpen(false)
+
+        if (user?.username) {
+            navigate(`/u/${user.username}`)
+            return
+        }
+
+        window.alert('Please set a username first.')
+        navigate('/profile/edit')
     }
 
     const closeMenu = () => setMenuOpen(false)
@@ -41,37 +99,102 @@ function NavBar(){
     return <nav className="navbar" ref={navRef}>
         <Link to="/" className="navbar-title">
             <GiFilmProjector style={{ color: '#e50914', fontSize: '2rem' }} />
-            <span>movieEngine</span>
+            <span>MovieEngine</span>
         </Link>
-        <button
-            type="button"
-            className="navbar-menuButton"
-            aria-label="Menu"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(v => !v)}
-        >
-            <GiHamburgerMenu />
-        </button>
+        <div className="navbar-actions">
+            <ul className="navbar-links">
+                <li><Link className="navbar-link" to="/favourites">Bookmarks</Link></li>
+                <li><Link className="navbar-link" to="/watched">Watched</Link></li>
+                {!isAuthenticated ? (
+                    <>
+                        <li><Link className="navbar-link" to="/login">Login</Link></li>
+                        <li><Link className="navbar-link" to="/register">Register</Link></li>
+                    </>
+                ) : null}
+            </ul>
 
-        <ul className="navbar-links">
-            <li><Link className="navbar-link" to="/favourites">Bookmarks</Link></li>
-            <li><Link className="navbar-link" to="/watched">Watched</Link></li>
-            {!isAuthenticated ? (
-                <>
-                    <li><Link className="navbar-link" to="/login">Login</Link></li>
-                    <li><Link className="navbar-link" to="/register">Register</Link></li>
-                </>
-            ) : (
-                <>
-                    <li className="navbar-user">
-                        {user?.name || user?.email}
-                    </li>
-                    <li>
-                        <button onClick={onLogout}>Logout</button>
-                    </li>
-                </>
-            )}
-        </ul>
+            {isAuthenticated ? (
+                <div className="nav-profile-wrapper" ref={dropdownRef}>
+                    <button
+                        type="button"
+                        className={`nav-avatar-btn ${dropdownOpen ? 'active' : ''}`}
+                        onClick={() => setDropdownOpen((prev) => !prev)}
+                        aria-label="Profile menu"
+                        aria-expanded={dropdownOpen}
+                    >
+                        <img
+                            src={getAvatarUrl(user?.avatar, user?.name || user?.username || user?.email)}
+                            alt={user?.name || 'Profile'}
+                            className="nav-avatar-img"
+                        />
+                        <span className="nav-avatar-chevron">▾</span>
+                    </button>
+
+                    {dropdownOpen && (
+                        <div className="nav-dropdown" role="menu">
+                            <div className="nav-dropdown-header">
+                                <img
+                                    src={getAvatarUrl(user?.avatar, user?.name || user?.username || user?.email)}
+                                    alt={user?.name}
+                                    className="nav-dropdown-avatar"
+                                />
+                                <div className="nav-dropdown-userinfo">
+                                    <span className="nav-dropdown-name">{user?.name}</span>
+                                    <span className="nav-dropdown-username">@{user?.username || 'unknown'}</span>
+                                </div>
+                            </div>
+
+                            <div className="nav-dropdown-divider" />
+
+                            <Link
+                                to="/profile/edit"
+                                className="nav-dropdown-item"
+                                onClick={() => {
+                                    setDropdownOpen(false)
+                                    setMenuOpen(false)
+                                }}
+                                role="menuitem"
+                            >
+                                <span className="nav-dropdown-icon">✏️</span>
+                                Edit Profile
+                            </Link>
+
+                            <button
+                                type="button"
+                                className="nav-dropdown-item"
+                                onClick={handleShareProfile}
+                                role="menuitem"
+                            >
+                                <span className="nav-dropdown-icon">🔗</span>
+                                Share My Profile
+                            </button>
+
+                            <div className="nav-dropdown-divider" />
+
+                            <button
+                                type="button"
+                                className="nav-dropdown-item nav-dropdown-item--danger"
+                                onClick={handleLogout}
+                                role="menuitem"
+                            >
+                                <span className="nav-dropdown-icon">🚪</span>
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            ) : null}
+
+            <button
+                type="button"
+                className="navbar-menuButton"
+                aria-label="Menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen(v => !v)}
+            >
+                <GiHamburgerMenu />
+            </button>
+        </div>
 
         {menuOpen ? (
             <>
@@ -84,12 +207,7 @@ function NavBar(){
                         <Link className="navbar-menuItem" to="/login" onClick={closeMenu}>Login</Link>
                         <Link className="navbar-menuItem" to="/register" onClick={closeMenu}>Register</Link>
                     </>
-                ) : (
-                    <>
-                        <div className="navbar-menuUser">{user?.name || user?.email}</div>
-                        <button className="navbar-menuItem" onClick={onLogout}>Logout</button>
-                    </>
-                )}
+                ) : null}
                 </div>
             </>
         ) : null}
