@@ -1,8 +1,35 @@
 import MovieCard from "../components/movieCard.jsx";
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigationType, useSearchParams } from "react-router-dom";
 import { searchMovies, getPopularMovies, getTopRatedMovies, searchTvShows, getPopularTvShows, getTopRatedTvShows } from "../services/Api";
 import '../css/Home.css'
+
+const HOME_CACHE_KEY = "movieengine:home-cache";
+
+const loadHomeCache = () => {
+    try {
+        const raw = sessionStorage.getItem(HOME_CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+};
+
+const saveHomeCache = (data) => {
+    try {
+        sessionStorage.setItem(HOME_CACHE_KEY, JSON.stringify(data));
+    } catch {
+        // ignore — sessionStorage might be full
+    }
+};
+
+const clearHomeCache = () => {
+    try {
+        sessionStorage.removeItem(HOME_CACHE_KEY);
+    } catch {
+        console.log("Failed to clear home cache");
+    }
+};
 
 function appendUniqueById(existing, incoming) {
     const next = Array.isArray(incoming) ? incoming : [];
@@ -21,19 +48,28 @@ function appendUniqueById(existing, incoming) {
 
 function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigationType = useNavigationType();
     const mediaTypeParam = searchParams.get('type') === 'tv' ? 'tv' : 'movie';
     const listType = searchParams.get('list') || 'popular';
 
+    const cachedState = navigationType === "POP" ? loadHomeCache() : null;
+    const canRestoreCache = Boolean(
+        cachedState &&
+        cachedState.mediaType === mediaTypeParam &&
+        cachedState.listType === listType
+    );
+
     const [mediaType, setMediaType] = useState(mediaTypeParam);
-    const [movies, setMovies] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [movies, setMovies] = useState(canRestoreCache ? (cachedState.movies ?? []) : []);
+    const [page, setPage] = useState(canRestoreCache ? (cachedState.page ?? 1) : 1);
+    const [totalPages, setTotalPages] = useState(canRestoreCache ? (cachedState.totalPages ?? 1) : 1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const [query, setQuery] = useState("");
-    const [activeQuery, setActiveQuery] = useState("");
+    const [activeQuery, setActiveQuery] = useState(canRestoreCache ? (cachedState.activeQuery ?? "") : "");
+    const [query, setQuery] = useState(canRestoreCache ? (cachedState.activeQuery ?? "") : "");
     const sentinelRef = useRef(null);
+    const restoredFromCache = useRef(canRestoreCache && navigationType === "POP");
     const prevMediaTypeParamRef = useRef(mediaTypeParam);
     const prevListTypeRef = useRef(listType);
     const skipNextMediaTypeParamResetRef = useRef(false);
@@ -88,6 +124,11 @@ function Home() {
     const hasMore = page < totalPages;
 
     useEffect(() => {
+        if (restoredFromCache.current) {
+            restoredFromCache.current = false;
+            return;
+        }
+
         let cancelled = false;
 
         async function fetchPage() {
@@ -131,6 +172,18 @@ function Home() {
     }, [page, activeQuery, mediaType, listType]);
 
     useEffect(() => {
+        if (movies.length === 0) return;
+        saveHomeCache({
+            movies,
+            page,
+            totalPages,
+            activeQuery,
+            mediaType,
+            listType,
+        });
+    }, [movies, page, totalPages, activeQuery, mediaType, listType]);
+
+    useEffect(() => {
         const sentinelEl = sentinelRef.current;
         if (!sentinelEl) return;
         if (loading) return;
@@ -156,6 +209,7 @@ function Home() {
         const next = query.trim();
         if (!next) return;
 
+        clearHomeCache();
         setMovies([]);
         setPage(1);
         setTotalPages(1);
@@ -164,6 +218,7 @@ function Home() {
     }
 
     function clearSearch() {
+        clearHomeCache();
         setQuery("");
         setActiveQuery("");
         setMovies([]);

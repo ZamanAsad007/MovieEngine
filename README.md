@@ -13,11 +13,13 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 ## Features
 
 - **Infinite scroll** — browse popular/top-rated results with Intersection Observer loading
+- **Back navigation restore** — Home restores loaded list state on browser back so scroll position returns correctly after viewing details
 - **Search** — search movies and TV shows by title
 - **Auth** — email/password login + Google OAuth
 - **Email verification** — email/password accounts must verify before login
 - **Profile management** — edit name, username, avatar, and password
 - **Public profiles** — share a public profile page at `/u/:username`
+- **Responsive profile boards** — public Bookmarks/Watched sections are side-by-side on desktop and stacked on mobile, with compact cards (up to 4/row desktop, 2/row mobile)
 - **Bookmarks** — add/remove bookmarks (stored in MongoDB per user)
 - **Watched** — mark items watched and view watched list
 
