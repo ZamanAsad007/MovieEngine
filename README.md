@@ -1,6 +1,6 @@
 # MovieEngine
 
-A full‑stack movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies and TV shows, search by title, manage your bookmarks/watched list with an authenticated account, and share public profiles.
+A full‑stack movie browsing app powered by the [TMDB API](https://www.themoviedb.org/). Browse popular movies and TV shows, search by title, chat with an AI recommender, manage your bookmarks/watched list with an authenticated account, and share public profiles.
 
 > Note: The app currently uses **Bookmarks** (instead of Favourites). “Favourites” will be implemented later.
 
@@ -15,6 +15,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 - **Infinite scroll** — browse popular/top-rated results with Intersection Observer loading
 - **Back navigation restore** — Home restores loaded list state on browser back so scroll position returns correctly after viewing details
 - **Search** — search movies and TV shows by title
+- **AI assistant** — use the floating AI chat/recommender powered by Gemini
 - **Auth** — email/password login + Google OAuth
 - **Email verification** — email/password accounts must verify before login
 - **Profile management** — edit name, username, avatar, and password
@@ -35,6 +36,7 @@ A full‑stack movie browsing app powered by the [TMDB API](https://www.themovie
 | State | React Context API |
 | Backend | Node.js + Express |
 | Auth | Passport (Local + Google OAuth) + JWT + email verification |
+| AI | Gemini-powered recommendation assistant |
 | Database | MongoDB Atlas + Mongoose |
 | Data | TMDB REST API |
 | Hosting | Vercel (frontend) + Render (backend) |
@@ -60,6 +62,8 @@ frontend/
 ├── src/
 │   ├── components/
 │   │   ├── NavBar.jsx     # Fixed top navigation bar
+│   │   ├── AIChatSidebar.jsx # AI chat drawer/recommender UI
+│   │   ├── FloatingAI.jsx  # Floating AI launcher button
 │   │   └── movieCard.jsx  # Movie card with poster, title, year and bookmark button
 │   ├── contexts/
 │   │   └── MovieContext.jsx  # Global bookmarks state (Context + localStorage)
@@ -75,6 +79,7 @@ frontend/
 │   │   └── ResendVerification.jsx # Resend verification form
 │   ├── services/
 │   │   ├── Api.js         # TMDB API helpers (paged results + search)
+│   │   ├── aiApi.js       # AI recommendation API helper
 │   │   └── userApi.js     # Profile API helpers
 │   ├── App.jsx            # Route definitions
 │   └── main.jsx           # React entry point
@@ -92,6 +97,7 @@ frontend/
 - A free [TMDB API key](https://www.themoviedb.org/settings/api)
 - A MongoDB connection string (Atlas or local)
 - A Gmail account with an app password if you want email verification locally
+- A Gemini API key if you want the AI recommender enabled locally
 
 ### Steps
 
@@ -101,7 +107,7 @@ cd backend
 npm install
 
 # Create backend/.env (copy keys from backend/.env.example if you have one)
-# Required: MONGO_URI, JWT_SECRET, SESSION_SECRET, EMAIL_USER, EMAIL_PASS, FRONTEND_URL, BACKEND_URL
+# Required: MONGO_URI, JWT_SECRET, SESSION_SECRET, EMAIL_USER, EMAIL_PASS, FRONTEND_URL, BACKEND_URL, GEMINI_API_KEY
 # For Google OAuth (optional locally): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 
 npm start
@@ -138,6 +144,7 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 
 - **Frontend (Vercel):** set `VITE_TMDB_API_KEY` and (optionally) `VITE_BACKEND_URL=https://movieengine.onrender.com`.
 - **Backend (Render):** set `MONGO_URI`, `JWT_SECRET`, `SESSION_SECRET`, `FRONTEND_ORIGIN=https://movie-engine-five.vercel.app`, `FRONTEND_URL=https://movie-engine-five.vercel.app`, `BACKEND_URL=https://movieengine.onrender.com`, `EMAIL_USER`, and `EMAIL_PASS`.
+- **Backend (Render):** set `MONGO_URI`, `JWT_SECRET`, `SESSION_SECRET`, `FRONTEND_ORIGIN=https://movie-engine-five.vercel.app`, `FRONTEND_URL=https://movie-engine-five.vercel.app`, `BACKEND_URL=https://movieengine.onrender.com`, `EMAIL_USER`, `EMAIL_PASS`, and `GEMINI_API_KEY`.
 - **Google OAuth:** in Google Cloud Console add Authorized redirect URI:
    - `https://movieengine.onrender.com/api/auth/google/callback`
 
@@ -148,3 +155,4 @@ Run these from the `frontend/` directory (or use the `--prefix frontend` flag fr
 - Unverified email/password accounts cannot log in until they confirm their email.
 - Google OAuth accounts bypass email verification and log in normally.
 - The nav bar profile dropdown links to profile editing and public sharing.
+- The floating AI button opens the AI chat/recommendation assistant.
