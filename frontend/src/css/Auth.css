@@ -66,16 +66,21 @@
 }
 
 .auth-form input {
-  padding: 0.75rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.05rem;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(0, 0, 0, 0.3);
   color: white;
+  height: 48px;
 }
 
 .auth-form button {
-  padding: 0.75rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.05rem;
   border-radius: 8px;
+  height: 48px;
+  font-weight: 600;
 }
 
 .auth-error {
