@@ -1,23 +1,18 @@
-const nodemailer = require("nodemailer");
+const { BrevoClient } = require('@getbrevo/brevo');
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,      
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
 
 const sendVerificationEmail = async (toEmail, userName, verificationLink) => {
-  const safeName = String(userName || "there");
+  const safeName = String(userName || 'there');
 
-  const mailOptions = {
-    from: `"MovieEngine" <${process.env.EMAIL_USER}>`,
-    to: toEmail,
-    subject: "Verify your MovieEngine account",
-    html: `
+  const request = {
+    subject: 'Verify your MovieEngine account',
+    sender: {
+      name: process.env.BREVO_SENDER_NAME || 'MovieEngine',
+      email: process.env.BREVO_SENDER_EMAIL,
+    },
+    to: [{ email: toEmail, name: safeName }],
+    htmlContent: `
       <!DOCTYPE html>
       <html>
         <body style="font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; padding: 40px;">
@@ -53,7 +48,7 @@ const sendVerificationEmail = async (toEmail, userName, verificationLink) => {
             </p>
             <hr style="border-color: #333; margin: 24px 0;" />
             <p style="color: #555; font-size: 0.8rem;">
-              If the button doesn't work, copy and paste this link into your browser:
+              If the button doesn't work, copy and paste this link:
               <br />
               <span style="color: #888; word-break: break-all;">${verificationLink}</span>
             </p>
@@ -65,15 +60,12 @@ const sendVerificationEmail = async (toEmail, userName, verificationLink) => {
 
   try {
     console.log(`📧 Sending verification email to: ${toEmail}`);
-    const result = await transporter.sendMail(mailOptions);
-    console.log(`✅ Verification email sent successfully to: ${toEmail}`);
+    const result = await brevo.transactionalEmails.sendTransacEmail(request);
+    console.log(`✅ Verification email sent to: ${toEmail}`);
     return result;
-  } catch (error) {
-    console.error(`❌ FAILED to send verification email to ${toEmail}:`);
-    console.error(`   Error: ${error.message}`);
-    console.error(`   Code: ${error.code}`);
-    console.error(`   Response: ${error.response}`);
-    throw error;
+  } catch (err) {
+    console.error(`❌ FAILED to send verification email to ${toEmail}:`, err?.message || err);
+    throw err;
   }
 };
 
